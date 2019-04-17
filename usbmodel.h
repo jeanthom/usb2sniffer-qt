@@ -27,9 +27,13 @@ public:
 
     /* custom API */
     int addPacket(USBPacket *packet);
+    int addPacketNoUpdateNodes(USBPacket *packet);
     int lastPacket();
     void updateNodes();
+    void thingy();
 
+    void callBeginResetModel();
+    void callEndResetModel();
 signals:
     void numberPopulated(int number);
 

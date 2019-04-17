@@ -23,6 +23,18 @@ int USBModel::addPacket(USBPacket *packet)
     return true;
 }
 
+int USBModel::addPacketNoUpdateNodes(USBPacket *packet)
+{
+    /* Push packet to aggregator */
+    m_aggregator.append(packet);
+    return true;
+}
+
+void USBModel::thingy(void) {
+    updateNodes();
+    emit numberPopulated(m_aggregator.count());
+}
+
 int USBModel::lastPacket()
 {
     m_aggregator.done();
@@ -37,14 +49,14 @@ void USBModel::updateNodes()
     USBItem *child;
 
     /* Add new nodes from aggregator, if any */
-
+    auto pending_items = m_aggregator.getPendingNum();
+    size = m_rootItem->childCount();
+    beginInsertRows(QModelIndex(), size, size+pending_items);
     while(m_aggregator.getPending(&child))
     {
-        size = m_rootItem->childCount();
-        beginInsertRows(QModelIndex(), size, size);
         m_rootItem->appendChild(child);
-        endInsertRows();
     }
+    endInsertRows();
 }
 
 QModelIndex USBModel::index(int row, int column, const QModelIndex &parent)
@@ -137,4 +149,12 @@ QVariant USBModel::headerData(int section, Qt::Orientation orientation,
         return m_rootItem->headerData(section);
 
     return QVariant();
+}
+
+void USBModel::callBeginResetModel() {
+    beginResetModel();
+}
+
+void USBModel::callEndResetModel() {
+    endResetModel();
 }

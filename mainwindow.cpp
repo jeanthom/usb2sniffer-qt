@@ -40,6 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(ui->statusPacketNum);
     ui->mainToolBar->addWidget(ui->statusCapture);
 
+    /* This greatly improves widget drawing perfs when dealing with large datasets */
+    ui->treeView->setUniformRowHeights(true);
+    ui->messageView->setUniformRowHeights(true);
+
     configWindow = new ConfigureWindow(this);
     filterWindow = new FilterWindow(this);
     aboutWindow = new AboutWindow(this);
@@ -110,10 +114,16 @@ void MainWindow::newSession()
     /* Delete previous data */
 
     m->deleteLater();
-    delete currentProxy;
-    delete currentModel;
-    delete currentMsg;
 
+    if (currentModel) {
+        delete currentModel;
+    }
+    if (currentProxy) {
+        delete currentProxy;
+    }
+    if (currentMsg) {
+        delete currentMsg;    
+    }
     currentProxy = proxyModel;
     currentModel = usbModel;
     currentMsg = msgModel;
@@ -261,9 +271,10 @@ void MainWindow::loadFile()
     usb_sess = usb_new_session();
     newSession();
 
+    currentModel->callBeginResetModel();
     while(!feof(in)){
         len = fread(swp, 1, 512, in);
-        if(len < 0)
+        if (ferror(in))
             return;
 
         /* file stored in byte swapped format */
@@ -275,9 +286,12 @@ void MainWindow::loadFile()
             currentMsg->addMessage(ts, type, val);
         }
         while(usb_read_packet(usb_sess, &type, buf, &plen, &ts)){
-            currentModel->addPacket(new USBPacket(ts, QByteArray((char *)buf, plen)));
+            currentModel->addPacketNoUpdateNodes(new USBPacket(ts,
+                QByteArray((char *)buf, plen)));
         }
     }
+    currentModel->thingy();
+    currentModel->callEndResetModel();
 
     currentModel->lastPacket();
     fclose(in);

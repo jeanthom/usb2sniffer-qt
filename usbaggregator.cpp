@@ -38,6 +38,11 @@ bool USBAggregator::getPending(USBItem **item)
     return true;
 }
 
+int USBAggregator::getPendingNum(void)
+{
+    return m_pending.size();
+}
+
 void USBAggregator::done()
 {
     endGroup();
