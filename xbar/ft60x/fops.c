@@ -1,3 +1,10 @@
+#include <stdio.h>
+#include <stdint.h>
+
+#ifdef LIBFT601
+#include <ft601.h>
+#endif
+
 #include "fops.h"
 
 int ft60x_open(ftdev_t *fd, const char *path)
@@ -7,6 +14,15 @@ int ft60x_open(ftdev_t *fd, const char *path)
 
     *fd = open(path, O_RDWR, mode);
     return *fd;
+#elif LIBFT601
+    ft601_err_t status;
+
+    status = ft601_open((ft601_t**)fd, 0x0403, 0x601f, 100);
+    if (status != E_OK) {
+        return -1;
+    } else {
+        return 0;
+    }
 #else
     FT_STATUS ftStatus = FT_OK;
 
@@ -16,6 +32,7 @@ int ft60x_open(ftdev_t *fd, const char *path)
     {
         return -1;
     }
+
     return 0;
 #endif
 }
@@ -24,6 +41,9 @@ int ft60x_close(ftdev_t fd)
 {
 #ifdef __linux__
     return close(fd);
+#elif LIBFT601
+    ft601_close((ft601_t*)fd);
+    return 0;
 #else
     FT_STATUS ftStatus = FT_OK;
 
@@ -40,6 +60,10 @@ ssize_t ft60x_read(ftdev_t fd, void *buf, size_t len)
 {
 #ifdef __linux__
     return read(fd, buf, len);
+#elif LIBFT601
+    size_t ulBytesRead = 0;
+    ft601_readpipe((ft601_t*)fd, 0x82, buf, len, &ulBytesRead);
+    return ulBytesRead;
 #else
     FT_STATUS ftStatus = FT_OK;
     unsigned long ulBytesRead = 0;
@@ -48,6 +72,7 @@ ssize_t ft60x_read(ftdev_t fd, void *buf, size_t len)
     ftStatus = FT_ReadPipe(fd, pipeID, buf, len, &ulBytesRead, NULL);
     if (FT_FAILED(ftStatus))
     {
+        fprintf(stderr, "ft60x_read error : %d\n", ftStatus);
         FT_AbortPipe(fd, pipeID);
         return -1;
     }
@@ -59,6 +84,11 @@ ssize_t ft60x_write(ftdev_t fd, const void *buf, size_t len)
 {
 #ifdef __linux__
     return write(fd, buf, len);
+#elif LIBFT601
+    size_t ulBytesRead = 0;
+    
+    ft601_writepipe((ft601_t*)fd, 0x02, buf, len, &ulBytesRead);
+    return ulBytesRead;
 #else
     FT_STATUS ftStatus = FT_OK;
     unsigned long ulBytesWritten = 0;
@@ -67,6 +97,7 @@ ssize_t ft60x_write(ftdev_t fd, const void *buf, size_t len)
     ftStatus = FT_WritePipe(fd, pipeID, buf, len, &ulBytesWritten, NULL);
     if (FT_FAILED(ftStatus))
     {
+        fprintf(stderr, "ft60x_write error : %d\n", ftStatus);
         FT_AbortPipe(fd, pipeID);
         return -1;
     }
