@@ -48,7 +48,8 @@ SOURCES += \
     msgmodel.cpp \
     parser/parse.c \
     xbar/ft60x/fops.c \
-    aboutwindow.cpp
+    aboutwindow.cpp \
+    qunifiedtoolbar.cpp
 
 HEADERS += \
     qhexedit2/src/commands.h \
@@ -76,7 +77,8 @@ HEADERS += \
     msgmodel.h \
     parser/parse.h \
     xbar/ft60x/fops.h \
-    aboutwindow.h
+    aboutwindow.h \
+    qunifiedtoolbar.h
 
 FORMS += \
         mainwindow.ui \
@@ -93,12 +95,17 @@ RESOURCES += \
     resources.qrc
 
 win32: LIBS += -L$$PWD/xbar/ft60x/FTD3XXLibrary/Win32/ -lFTD3XX
-macx: LIBS += -L$$PWD/xbar/ft60x/FTD3XXLibrary/macOS/ -lftd3xx
+macx {
+    OBJECTIVE_SOURCES += qunifiedtoolbar_cocoa.mm
+    HEADERS += qunifiedtoolbar_cocoa.h
+    LIBS += -L$$PWD/xbar/ft60x/FTD3XXLibrary/macOS/ -lftd3xx -framework Cocoa
+}
 
 mac {
     Resources.files += $$PWD/xbar/ft60x/FTD3XXLibrary/macOS/libftd3xx.dylib
     Resources.path = Contents/MacOS
     QMAKE_BUNDLE_DATA += Resources
+    QT += macextras
 }
 
 INCLUDEPATH += $$PWD/xbar/ft60x/FTD3XXLibrary/Win32

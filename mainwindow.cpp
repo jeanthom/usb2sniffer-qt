@@ -38,7 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->statusBar->addPermanentWidget(ui->statusPacketNum);
-    ui->mainToolBar->addWidget(ui->statusCapture);
+    //ui->mainToolBar->addWidget(ui->statusCapture);
+
+    ui->mainToolBar->populationEnded();
 
     /* This greatly improves widget drawing perfs when dealing with large datasets */
     ui->treeView->setUniformRowHeights(true);

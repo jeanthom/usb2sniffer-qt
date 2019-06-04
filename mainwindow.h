@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#if defined(Q_OS_MACOS)
+#include <QMacToolBar>
+#endif
 
 #include "configurewindow.h"
 #include "filterwindow.h"
@@ -77,6 +80,10 @@ private:
 
     QByteArray dataBuffer;
     QByteArray packetBuffer;
+
+    #if defined(Q_OS_MACOS)
+    QMacToolBar* macToolbar;
+    #endif
 };
 
 #endif // MAINWINDOW_H
