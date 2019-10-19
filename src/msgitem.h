@@ -2,6 +2,7 @@
 #define MSGITEM_H
 
 #include <QList>
+#include <QVector>
 #include <QMutex>
 
 /* Columns numbers */
@@ -29,9 +30,8 @@ public:
     static const QVector<QString> s_header;
 
 private:
-    QList<MSGItem*> m_childItems;
+    QVector<MSGItem*> m_childItems;
     MSGItem *m_parentItem;
-    QMutex m_mutex;
 
     uint64_t m_ts;
     uint8_t m_type;

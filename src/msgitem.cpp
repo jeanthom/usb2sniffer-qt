@@ -74,38 +74,22 @@ MSGItem::MSGItem(uint64_t ts, uint8_t type, uint8_t val, MSGItem *parentItem)
 
 MSGItem::~MSGItem()
 {
-    m_mutex.lock();
     qDeleteAll(m_childItems);
-    m_mutex.unlock();
 }
 
 void MSGItem::appendChild(MSGItem *item)
 {
-    m_mutex.lock();
     m_childItems.append(item);
-    m_mutex.unlock();
 }
 
 MSGItem *MSGItem::child(int row)
 {
-    MSGItem *tmp;
-
-    m_mutex.lock();
-    tmp = m_childItems.value(row);
-    m_mutex.unlock();
-
-    return tmp;
+    return m_childItems.value(row);
 }
 
 int MSGItem::childCount()
 {
-    int count;
-
-    m_mutex.lock();
-    count = m_childItems.count();
-    m_mutex.unlock();
-
-    return count;
+    return m_childItems.count();
 }
 
 int MSGItem::row()
@@ -113,9 +97,7 @@ int MSGItem::row()
     int idx = 0;
 
     if (m_parentItem) {
-        m_mutex.lock();
         idx = m_parentItem->m_childItems.indexOf(const_cast<MSGItem*>(this));
-        m_mutex.unlock();
     }
 
     return idx;
