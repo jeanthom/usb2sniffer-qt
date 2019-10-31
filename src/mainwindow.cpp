@@ -2,73 +2,45 @@
 #include <QMessageBox>
 
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include <unistd.h> // FIXME
 
-USBItem* createSampleData()
-{
-    USBItem *rootItem = new USBItem(new USBPacket(0, QByteArray()));
-
-    USBItem *node = new USBItem(new USBPacket(1, QByteArray::fromHex("555342")), rootItem);
-
-    node->appendChild(new USBItem(new USBPacket(1, QByteArray::fromHex("698218")), node));
-    node->appendChild(new USBItem(new USBPacket(2, QByteArray::fromHex("4b5553425310")), node));
-    node->appendChild(new USBItem(new USBPacket(3, QByteArray::fromHex("d2")), node));
-
-    rootItem->appendChild(node);
-
-    return rootItem;
-}
-
-MSGItem* createSampleMsg()
-{
-    MSGItem *rootItem = new MSGItem(0, 0, 0);
-
-    rootItem->appendChild(new MSGItem(0, 0, 0, rootItem));
-    rootItem->appendChild(new MSGItem(0, 0, 0, rootItem));
-    rootItem->appendChild(new MSGItem(0, 0, 0, rootItem));
-
-    return rootItem;
-}
-
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
-    ui->statusBar->addPermanentWidget(ui->statusPacketNum);
-    ui->mainToolBar->addWidget(ui->statusCapture);
+    ui.setupUi(this);
+    ui.statusBar->addPermanentWidget(ui.statusPacketNum);
+    ui.mainToolBar->addWidget(ui.statusCapture);
 
     #ifdef Q_OS_MACOS
     setUnifiedTitleAndToolBarOnMac(true);
     #endif
 
     /* This greatly improves widget drawing perfs when dealing with large datasets */
-    ui->treeView->setUniformRowHeights(true);
-    ui->messageView->setUniformRowHeights(true);
+    ui.treeView->setUniformRowHeights(true);
+    ui.messageView->setUniformRowHeights(true);
 
     configWindow = new ConfigureWindow(this);
     filterWindow = new FilterWindow(this);
     aboutWindow = new AboutWindow(this);
 
-    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::loadFileDialog);
-    connect(ui->actionSave_As, &QAction::triggered, this, &MainWindow::saveFile);
-    connect(ui->actionExit, &QAction::triggered, this, &MainWindow::exit);
+    connect(ui.actionOpen, &QAction::triggered, this, &MainWindow::loadFileDialog);
+    connect(ui.actionSave_As, &QAction::triggered, this, &MainWindow::saveFile);
+    connect(ui.actionExit, &QAction::triggered, this, &MainWindow::exit);
 
-    connect(ui->actionConfigure, &QAction::triggered, configWindow, &ConfigureWindow::open);
-    connect(ui->actionStart, &QAction::triggered, this, &MainWindow::startCapture);
-    connect(ui->actionStop, &QAction::triggered, this, &MainWindow::stopCapture);
+    connect(ui.actionConfigure, &QAction::triggered, configWindow, &ConfigureWindow::open);
+    connect(ui.actionStart, &QAction::triggered, this, &MainWindow::startCapture);
+    connect(ui.actionStop, &QAction::triggered, this, &MainWindow::stopCapture);
 
-    connect(ui->actionFilter, &QAction::triggered, filterWindow, &FilterWindow::open);
+    connect(ui.actionFilter, &QAction::triggered, filterWindow, &FilterWindow::open);
     connect(filterWindow, &FilterWindow::accepted, this, &MainWindow::setFilter);
 
-    connect(ui->actionAbout, &QAction::triggered, aboutWindow, &AboutWindow::open);
+    connect(ui.actionAbout, &QAction::triggered, aboutWindow, &AboutWindow::open);
 
-    ui->textAsciiPacket->setReadOnly(true);
-    ui->textAsciiPacket->setDynamicBytesPerLine(true);
-    ui->textAsciiData->setReadOnly(true);
-    ui->textAsciiData->setDynamicBytesPerLine(true);
+    ui.textAsciiPacket->setReadOnly(true);
+    ui.textAsciiPacket->setDynamicBytesPerLine(true);
+    ui.textAsciiData->setReadOnly(true);
+    ui.textAsciiData->setDynamicBytesPerLine(true);
 }
 
 MainWindow::~MainWindow()
@@ -78,7 +50,6 @@ MainWindow::~MainWindow()
     delete currentMsg;
 
     delete configWindow;
-    delete ui;
 }
 
 void MainWindow::setFilter()
@@ -102,20 +73,20 @@ void MainWindow::newSession()
     proxyModel->setFilter(filterWindow->getFilter());
     proxyModel->setSourceModel(usbModel);
 
-    QItemSelectionModel *selectionModel = ui->treeView->selectionModel();
-    ui->treeView->setModel(proxyModel);
-    ui->treeView->setColumnWidth(0, 300);
-    ui->treeView->setColumnWidth(1, 150);
-    connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    QItemSelectionModel *selectionModel = ui.treeView->selectionModel();
+    ui.treeView->setModel(proxyModel);
+    ui.treeView->setColumnWidth(0, 300);
+    ui.treeView->setColumnWidth(1, 150);
+    connect(ui.treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(selectionChanged(const QItemSelection&,const QItemSelection&)));
 
     /* Put raw messages into model */
 
     MSGModel *msgModel = new MSGModel();
-    ui->messageView->setModel(msgModel);
-    ui->messageView->setColumnWidth(0, 150);
-    ui->messageView->setColumnWidth(1, 60);
-    ui->messageView->setColumnWidth(2, 60);
+    ui.messageView->setModel(msgModel);
+    ui.messageView->setColumnWidth(0, 150);
+    ui.messageView->setColumnWidth(1, 60);
+    ui.messageView->setColumnWidth(2, 60);
 
     /* Delete previous data */
     if (selectionModel) {
@@ -134,13 +105,13 @@ void MainWindow::captureFinished()
 {
     /* enable / disable action buttons */
 
-    ui->actionStart->setEnabled(true);
-    ui->actionStop->setEnabled(false);
-    ui->statusCapture->setText("");
+    ui.actionStart->setEnabled(true);
+    ui.actionStop->setEnabled(false);
+    ui.statusCapture->setText("");
 
-    ui->actionOpen->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
-    ui->actionConfigure->setEnabled(true);
+    ui.actionOpen->setEnabled(true);
+    ui.actionSave_As->setEnabled(true);
+    ui.actionConfigure->setEnabled(true);
 
     captureThread->deleteLater();
     captureThread = nullptr;
@@ -175,23 +146,23 @@ void MainWindow::startCapture()
 
         /* enable / disable action buttons */
 
-        ui->actionStart->setEnabled(false);
-        ui->actionStop->setEnabled(true);
-        ui->statusCapture->setText(QString("Capturing (%1)...")
+        ui.actionStart->setEnabled(false);
+        ui.actionStop->setEnabled(true);
+        ui.statusCapture->setText(QString("Capturing (%1)...")
                                    .arg(configWindow->m_config.speedStr()));
 
         fileSaved = false;
-        ui->actionOpen->setEnabled(false);
-        ui->actionSave_As->setEnabled(false);
-        ui->actionConfigure->setEnabled(false);
+        ui.actionOpen->setEnabled(false);
+        ui.actionSave_As->setEnabled(false);
+        ui.actionConfigure->setEnabled(false);
     }
 }
 
 void MainWindow::stopCapture()
 {
     if ((captureThread != nullptr) && (captureThread->isRunning())) {
-        ui->actionStop->setEnabled(false);
-        ui->statusCapture->setText("Uploading...");
+        ui.actionStop->setEnabled(false);
+        ui.statusCapture->setText("Uploading...");
 
         captureThread->stop();
     }
@@ -305,7 +276,7 @@ void MainWindow::loadFile(QString file)
     fclose(in);
 
     fileSaved = true;
-    ui->actionSave_As->setEnabled(false);
+    ui.actionSave_As->setEnabled(false);
 }
 
 void MainWindow::updateAscii(const QModelIndex& index)
@@ -319,8 +290,8 @@ void MainWindow::updateAscii(const QModelIndex& index)
     auto recordData = item->recordData();
     dataBuffer = recordData.first;
     packetBuffer = recordData.second;
-    ui->textAsciiPacket->setData(packetBuffer);
-    ui->textAsciiData->setData(dataBuffer);
+    ui.textAsciiPacket->setData(packetBuffer);
+    ui.textAsciiData->setData(dataBuffer);
 }
 
 void MainWindow::updateDetails(const QModelIndex& index)
@@ -331,12 +302,12 @@ void MainWindow::updateDetails(const QModelIndex& index)
     QModelIndex source = currentProxy->mapToSource(index);
     USBItem *item = static_cast<USBItem*>(source.internalPointer());
 
-    ui->textDetails->setPlainText(item->details());
+    ui.textDetails->setPlainText(item->details());
 }
 
 void MainWindow::updateRecordsStats(int number)
 {
-    ui->statusPacketNum->setText(QString("Records: %1").arg(number));
+    ui.statusPacketNum->setText(QString("Records: %1").arg(number));
 }
 
 void MainWindow::displayDeviceNotFound()

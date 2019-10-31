@@ -2,24 +2,16 @@
 #define ABOUTWINDOW_H
 
 #include <QDialog>
-
-namespace Ui {
-class AboutWindow;
-}
+#include "ui_aboutwindow.h"
 
 class AboutWindow : public QDialog
 {
     Q_OBJECT
 
+    Ui::AboutWindow ui;
+
 public:
     explicit AboutWindow(QWidget *parent = nullptr);
-    ~AboutWindow();
-
-    // void accept();
-    // void open();
-
-private:
-    Ui::AboutWindow *ui;
 };
 
 #endif // ABOUTWINDOW_H

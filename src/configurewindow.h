@@ -5,16 +5,13 @@
 #include <QStringList>
 
 #include "capture.h"
-
-namespace Ui {
-class ConfigureWindow;
-}
+#include "ui_configurewindow.h"
 
 class ConfigureWindow : public QDialog
 {
+	Ui::ConfigureWindow ui;
 public:
     explicit ConfigureWindow(QWidget *parent = nullptr);
-    ~ConfigureWindow();
 
     void accept();
     void open();
@@ -23,9 +20,6 @@ public:
     void autoConfig();
 
     CaptureConfig m_config;
-
-private:
-    Ui::ConfigureWindow *ui;
 };
 
 #endif // CONFIGUREWINDOW_H

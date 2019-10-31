@@ -3,28 +3,23 @@
 
 #include <QDialog>
 
+#include "ui_filterwindow.h"
 #include "usbproxy.h"
-
-namespace Ui {
-class FilterWindow;
-}
 
 class FilterWindow : public QDialog
 {
     Q_OBJECT
 
+    Ui::FilterWindow ui;
+    USBProxyFilter m_filter;
+
 public:
     explicit FilterWindow(QWidget *parent = nullptr);
-    ~FilterWindow();
 
     void accept();
     void open();
 
     const USBProxyFilter *getFilter() const;
-
-private:
-    Ui::FilterWindow *ui;
-    USBProxyFilter m_filter;
 };
 
 #endif // FILTERWINDOW_H

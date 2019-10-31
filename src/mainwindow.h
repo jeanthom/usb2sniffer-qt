@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+#include "ui_mainwindow.h"
 #include "configurewindow.h"
 #include "filterwindow.h"
 #include "aboutwindow.h"
@@ -28,13 +29,26 @@ extern "C" {
 }
 #endif
 
-namespace Ui {
-class MainWindow;
-}
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
+    Ui::MainWindow ui;
+    ConfigureWindow *configWindow;
+    FilterWindow *filterWindow;
+    AboutWindow *aboutWindow;
+
+    USBModel *currentModel = nullptr;
+    USBProxy *currentProxy = nullptr;
+    MSGModel *currentMsg = nullptr;
+
+    CaptureThread *captureThread = nullptr;
+    bool fileSaved = true; /* Used for warning on exit */
+
+    struct usb_session_s *usb_sess = nullptr;
+
+    QByteArray dataBuffer;
+    QByteArray packetBuffer;
 
 public slots:
     void displayDeviceNotFound();
@@ -60,24 +74,6 @@ public:
     void updateAscii(const QModelIndex& index);
     void updateDetails(const QModelIndex& index);
     void updateRecordsStats(int number);
-
-private:
-    Ui::MainWindow *ui;
-    ConfigureWindow *configWindow;
-    FilterWindow *filterWindow;
-    AboutWindow *aboutWindow;
-
-    USBModel *currentModel = nullptr;
-    USBProxy *currentProxy = nullptr;
-    MSGModel *currentMsg = nullptr;
-
-    CaptureThread *captureThread = nullptr;
-    bool fileSaved = true; /* Used for warning on exit */
-
-    struct usb_session_s *usb_sess = nullptr;
-
-    QByteArray dataBuffer;
-    QByteArray packetBuffer;
 };
 
 #endif // MAINWINDOW_H
