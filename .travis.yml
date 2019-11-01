@@ -24,6 +24,7 @@ matrix:
             - libgl1-mesa-dev
       install:
         - source /opt/qt512/bin/qt512-env.sh
+    - os: osx
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
