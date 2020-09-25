@@ -410,12 +410,11 @@ void usb_free_session(struct usb_session_s *s)
    usb_add_data(sess, buf, len);
 
    while(usb_read_data(sess, &type, &val, &ts)){
-   printf("Data: %d %02x %ld\n", type, val, ts);
+        printf("Data: %d %02x %ld\n", type, val, ts);
    }
    while(usb_read_packet(sess, &type, buf, &plen, &ts)){
-   printf("got packet %ld %d %d: ", ts, type, plen);
-   printhex(buf, plen);
-
+        printf("got packet %ld %d %d: ", ts, type, plen);
+        printhex(buf, plen);
    }
    }
 
